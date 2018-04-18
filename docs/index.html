@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+
+    <title>Thai-Handwriting-Number: สร้าง Dataset ลายมือตัวเลขไทย</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/drawingboard.js/0.4.6/drawingboard.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <style>
+      #layer_result canvas {
+        border: 1px solid grey;
+        margin: 5px;
+      }
+      #layer_result > div {
+        overflow-x: auto;
+      }
+    </style>
+
+
+  </head>
+  <body>
+
+    <!-- with input that accepts one file -->
+    <input id="local_file" type="file">
+    <div>
+      <h4 id="predict_result"></h4>
+    </div>
+
+    <!--
+    <img id="im" src="./prayuth.png" />
+    <img id="im2" src="./prayuth_sad.png" />
+    <img id="im3" src="./p1.png" />
+    <img id="im4" src="./p2.png" />
+    <img id="im5" src="./gun.png" />
+  -->
+    <div id="show_img" class="demo-container"></div>
+
+    <div class="demo-containerx">
+      <!--<img id="p_full" src="./angry.jpg" />-->
+    </div>
+
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.9"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/tracking-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/data/face-min.js"></script>
+
+
+
+    <script>
+
+      var LABEL_EMOTIONS = {0:'angry',1:'disgust',2:'fear',3:'happy', 4:'sad',5:'surprise',6:'neutral'};
+
+      var model;
+      $(document).ready(function () {
+
+        $("#local_file").change(function() {
+            // will log a FileList object, view gifs below
+            console.log(this.files);
+            renderImage(this.files[0]);
+            $('#predict_result').html("&nbsp;");
+        });
+
+
+        init = async () => {
+          model = await tf.loadModel("./model/model.json");
+          console.log("Model Loaded")
+
+          //result = model.predict(tf.zeros([1, 28, 28, 1])).print();;
+        };
+
+        init();
+      });
+
+      function renderImage(file) {
+
+        // generate a new FileReader object
+        var reader = new FileReader();
+
+        // inject an image with the src url
+        reader.onload = function(event) {
+          the_url = event.target.result;
+          var html = "<img id='input_img' src='" + the_url + "' />";
+          $('#show_img').html(html);
+          setTimeout(function(){
+            trackFace();
+          }, 500);
+
+        }
+
+        // when the file is read it triggers the onload event above.
+        reader.readAsDataURL(file);
+      }
+
+      var tracker = new tracking.ObjectTracker(['face']);
+      tracker.setStepSize(1.7);
+      tracker.on('track', function(event) {
+        event.data.forEach(function(rect) {
+          console.log(rect);
+          plot(rect.x, rect.y, rect.width, rect.height);
+        });
+      });
+
+
+      function trackFace() {
+        var img = $('#input_img');
+
+         tracking.track('#input_img', tracker);
+
+
+      }
+
+      function preprocess_input(im) {
+        img = tf.fromPixels(im, 1).toFloat()
+        offset = tf.scalar(255);
+        x1 = tf.scalar(0.5);
+        x2 = tf.scalar(2);
+        normalized = img.div(offset).sub(x1).mul(x2);
+        batched = normalized.reshape([1, 64, 64, 1]);
+
+        r = model.predict(batched);
+        result = r.dataSync();
+        tresult = tf.tensor(result)
+        label_index = tf.argMax(tresult).dataSync()[0]
+
+        console.log(result);
+        console.log(label_index)
+        console.log("Predict: " + LABEL_EMOTIONS[label_index]);
+
+        $('#predict_result').html("Predict: " + LABEL_EMOTIONS[label_index]);
+      }
+
+      function plot(x, y, w, h, img) {
+        console.log("plot")
+        console.log(x, y, w, h);
+        //var img = document.getElementById('p_full');
+        var img = document.getElementById('input_img');
+        var rect = document.createElement('div');
+        document.querySelector('.demo-container').appendChild(rect);
+        rect.classList.add('rect');
+        rect.style.width = w + 'px';
+        rect.style.height = h + 'px';
+        rect.style.left = (img.offsetLeft + x) + 'px';
+        rect.style.top = (img.offsetTop + y) + 'px';
+
+
+        // Create input canvas
+        canvas = document.createElement('canvas');
+        ctx = canvas.getContext('2d');
+        canvas.id = "tun";
+        canvas.width = 64;
+        canvas.height = 64;
+        ctx.drawImage(img, x, y, w, h, 0, 0, 64, 64);
+        document.body.appendChild(canvas)
+
+        //Convert to Grayscaling
+        var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        console.log(imageData);
+        var data = imageData.data;
+        for (var i = 0; i < data.length; i += 4) {
+          var avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+          data[i]     = avg; // red
+          data[i + 1] = avg; // green
+          data[i + 2] = avg; // blue
+        }
+        ctx.putImageData(imageData, 0, 0);
+        preprocess_input(canvas);
+      };
+    </script>
+
+    <style>
+     .rect {
+       border: 2px solid #a64ceb;
+       left: -1000px;
+       position: absolute;
+       top: -1000px;
+     }
+     #img {
+       position: absolute;
+       top: 50%;
+       left: 50%;
+       margin: -173px 0 0 -300px;
+     }
+
+     #show_img {
+       position: relative;
+     }
+     </style>
+
+  </body>
+</html>
