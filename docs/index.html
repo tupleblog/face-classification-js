@@ -51,6 +51,7 @@
     </div>
 
     <canvas id="canvas_face" width="64" height="64"></canvas>
+    <canvas id="canvas_face_color" width="64" height="64"></canvas>
 
     <div id="chart_container">
 
@@ -84,6 +85,8 @@
       var context = canvas.getContext('2d');
       var canvas_face = document.getElementById('canvas_face');
       var ctx_face = canvas_face.getContext('2d');
+      var canvas_face_color = document.getElementById('canvas_face');
+      var ctx_face_color = canvas_face.getContext('2d');
 
 
       var model_emotion;
@@ -308,6 +311,27 @@
 
       }
 
+      function preprocess_input_gender(im) {
+        img = tf.fromPixels(im, 1).toFloat()
+        offset = tf.scalar(255);
+        normalized = img.div(offset);
+        batched = normalized.reshape([1, 64, 64, 1]);
+
+        r = model_gender.predict(batched);
+        result = r.dataSync();
+        tresult = tf.tensor(result)
+        label_index = tf.argMax(tresult).dataSync()[0]
+
+        console.log(result);
+        console.log(label_index)
+        console.log("Predict Gender: " + LABEL_GENDER[label_index]);
+        $('#result_gender').html("Gender: " + LABEL_GENDER[label_index]);
+        result_gender = LABEL_GENDER[label_index];
+
+        chart_gender.data.datasets[0].data = result;
+        chart_gender.update();
+      }
+
       function preprocess_input(im) {
         startTime = performance.now();
 
@@ -335,21 +359,7 @@
         console.log('Predict Time: ' + Math.floor(totalTime));
         debug('Predict Time: ' + Math.floor(totalTime));
 
-        r = model_gender.predict(batched);
-        result = r.dataSync();
-        tresult = tf.tensor(result)
-        label_index = tf.argMax(tresult).dataSync()[0]
-
-        console.log(result);
-        console.log(label_index)
-        console.log("Predict Gender: " + LABEL_GENDER[label_index]);
-        $('#result_gender').html("Gender: " + LABEL_GENDER[label_index]);
-        result_gender = LABEL_GENDER[label_index];
-
-        chart_gender.data.datasets[0].data = result;
-        chart_gender.update();
-
-        return {'emotion': result_emotion, 'gender': result_gender};
+        //return {'emotion': result_emotion, 'gender': result_gender};
       }
 
       function debug(text) {
@@ -380,12 +390,18 @@
 
         // Create input canvas
         canvas = document.createElement('canvas');
+        canvas_color = document.createElement('canvas');
         ctx = canvas.getContext('2d');
+        ctx_color = canvas_color.getContext('2d');
         canvas.id = "tun";
         canvas.width = 64;
         canvas.height = 64;
+        canvas_color.width = 64;
+        canvas_color.height = 64;
         ctx.drawImage(img, x*ratio, y*ratio, w * ratio, h * ratio, 0, 0, 64, 64);
+        ctx_color.drawImage(img, x*ratio, y*ratio, w * ratio, h * ratio, 0, 0, 64, 64);
         document.body.appendChild(canvas)
+        document.body.appendChild(canvas_color)
 
         //Convert to Grayscaling
         var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -402,6 +418,7 @@
         totalTime = performance.now() - startTime;
         debug('Plot Time: ' + Math.floor(totalTime));
         preprocess_input(canvas);
+        preprocess_input_gender(canvas_color);
       };
     </script>
 
@@ -427,8 +444,9 @@
        /*
     margin-left: 230px;
     margin-top: 120px;
-    */
+
     position: absolute;
+    */
   }
   #canvas_face {
     display: none;
