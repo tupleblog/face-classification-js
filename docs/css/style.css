@@ -1,0 +1,15 @@
+#image-container {
+  position: relative;
+  padding: 10px;
+}
+#show-img {
+  max-width: 100%;
+}
+.face-frame {
+  border: 2px solid #ff0000;
+  position: absolute;
+}
+
+.canvas-face {
+  display: none;
+}
