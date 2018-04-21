@@ -25,6 +25,9 @@ html {
   font-size: 2.1rem;
 }
 
+#logo-container {
+  font-family: CMUSansSerifMedium;
+}
 
 @media only screen and (max-width: 992px) {
   #head-container {
