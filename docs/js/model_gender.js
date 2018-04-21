@@ -1,10 +1,13 @@
 var MODEL_GENDER;
+var IS_MODEL_GENDER_LOADED = false;
 initGender = async () => {
   MODEL_GENDER = await tf.loadModel("./model/gender/model.json");
   console.log("Model Gender Loaded");
 
   //Warm up network
   MODEL_GENDER.predict(tf.zeros([1, 64, 64, 1]));
+  IS_MODEL_GENDER_LOADED = true
+  M.toast({html: 'Model Gender Loaded.'})
 };
 
 initGender();

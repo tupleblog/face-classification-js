@@ -8,6 +8,7 @@ var CANVAS_FACE_GREY = document.getElementById('face_profile_greyscale');
 var CANVAS_FACE_GREY_CTX = CANVAS_FACE_GREY.getContext('2d');
 var CHART_EMOTION;
 var CHART_GENDER;
+var EXPAND_BOX = {'x': 0, 'y': 0, 'w': 0, 'h': 0};
 var TRACKER = new tracking.ObjectTracker(['face']);
 
 $(document).ready(function() {
@@ -15,6 +16,11 @@ $(document).ready(function() {
     tracking.track('#webcam', TRACKER, { camera: true });
     setTimeout(function(){ setCanvasFrameSize(); }, 3000);
     initChart();
+
+    if (window.screen.availWidth > 900) {
+        EXPAND_BOX = {'x': -5, 'y': -5, 'w': 5, 'h': 5};
+    }
+
 });
 
 
@@ -23,13 +29,21 @@ TRACKER.on('track', function(faces) {
 
     CANVAS_FRAME_CTX.clearRect(0, 0, CANVAS_FRAME.width, CANVAS_FRAME.height);
 
-    if (faces.data.length == 0) {
+    if (faces.data.length == 0
+        || IS_MODEL_GENDER_LOADED == false
+        || IS_MODEL_EMOTION_LOADED == false) {
         return;
     }
 
-    //console.log(faces.data);
-    drawFaceFrame(faces.data[0]);
-    cropFace(faces.data[0]);
+    var rect = faces.data[0];
+
+    rect.x = rect.x - EXPAND_BOX.x;
+    rect.y = rect.y - EXPAND_BOX.y;
+    rect.width = rect.width + EXPAND_BOX.w;
+    rect.height = rect.height + EXPAND_BOX.h;
+
+    drawFaceFrame(rect);
+    cropFace(rect);
 
     var result_emotion = getResultEmotion(CANVAS_FACE_GREY);
     var result_gender = getResultGender(CANVAS_FACE_GREY);
@@ -95,10 +109,10 @@ function updateResultChart(result_emotion, result_gender) {
     //console.log(result_emotion);
     //console.log(result_gender);
     CHART_GENDER.data.datasets[0].data = result_gender.result;
-    CHART_GENDER.update();
+    CHART_GENDER.update(50);
 
     CHART_EMOTION.data.datasets[0].data = result_emotion.result;
-    CHART_EMOTION.update();
+    CHART_EMOTION.update(50);
 }
 
 function initChart() {
