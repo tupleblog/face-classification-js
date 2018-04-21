@@ -1,3 +1,5 @@
+var LABEL_EMOTIONS = {0:'Angry', 1:'Disgust', 2:'Fear', 3:'Happy', 4:'Sad', 5:'Surprise', 6:'Neutral'};
+var LABEL_GENDER = {0:'Woman', 1:'Man'};
 
 function preprocess_input(im) {
   img = tf.fromPixels(im, 1).toFloat()

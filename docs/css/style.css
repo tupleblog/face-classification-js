@@ -13,3 +13,6 @@
 .canvas-face {
   display: none;
 }
+.chart-result-profile canvas {
+  border-radius: 50px;
+}

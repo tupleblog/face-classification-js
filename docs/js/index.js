@@ -1,11 +1,7 @@
-var LABEL_EMOTIONS = {0:'Angry', 1:'Disgust', 2:'Fear', 3:'Happy', 4:'Sad', 5:'Surprise', 6:'Neutral'};
-var LABEL_GENDER = {0:'Woman', 1:'Man'};
-
 var TRACKER = new tracking.ObjectTracker(['face']);
 var COUNT_FACE = 0;
 
 $("#local_file").change(function() {
-    console.log(this.files);
     renderImage(this.files[0]);
     $('#result_emotion').html("&nbsp;");
     $('#result_gender').html("&nbsp;");
@@ -25,12 +21,13 @@ TRACKER.on('track', function(faces) {
 
     faces.data.forEach(function(rect) {
         var face_id = 'face_' + ++COUNT_FACE;
-        console.log(rect);
+        //console.log(rect);
         drawFaceFrame(rect);
         cropFace(rect, face_id);
 
-        generateResultEmotion(document.getElementById(face_id), face_id);
-        //plot(rect.x, rect.y, rect.width, rect.height);
+        var result_emotion = getResultEmotion(document.getElementById(face_id), face_id);
+        var result_gender = getResultGender(document.getElementById(face_id), face_id);
+        generateResultChart(face_id, result_emotion, result_gender);
     });
 });
 
@@ -98,9 +95,9 @@ function cropFace(rect, face_id) {
     ctx_color = canvas_color.getContext('2d');
     canvas_color.id = face_id + '_color';
     canvas_color.className = "canvas-face";
-    canvas_color.width = 64;
-    canvas_color.height = 64;
-    ctx_color.drawImage(img, x*ratio, y*ratio, w * ratio, h * ratio, 0, 0, 64, 64);
+    canvas_color.width = 100;
+    canvas_color.height = 100;
+    ctx_color.drawImage(img, x*ratio, y*ratio, w * ratio, h * ratio, 0, 0, 100, 100);
     document.body.appendChild(canvas_color);
 
 
@@ -117,23 +114,32 @@ function cropFace(rect, face_id) {
     document.body.appendChild(canvas)
 }
 
-function generateResultEmotion(im, face_id) {
+function getResultEmotion(im, face_id) {
     var input = preprocess_input(im);
     var result = predictEmotion(input);
-    console.log(result);
-    generateEmotionChart(result.result, face_id);
-
+    return result;
 }
 
-function generateEmotionChart(result, face_id) {
-    var chart_id = face_id + '_emotion_chart';
+function getResultGender(im, face_id) {
+    var input = preprocess_input(im);
+    var result = predictGender(input);
+    return result;
+}
+
+
+function generateResultChart(face_id, result_emotion, result_gender) {
+    var chart_emotion_id = face_id + '_emotion_chart';
+    var chart_gender_id = face_id + '_gender_chart';
     var html = `
          <div class="col s12 m6 chart-result">
               <div class="card">
                 <div class="card-content" style="text-align: center;">
-                  <canvas id="` + face_id + `_profile_chart" width="64" height="64"></canvas>
+                  <div class="chart-result-profile"><canvas id="` + face_id + `_profile_chart" width="100" height="100"></canvas></div>
                   <div>
-                      <canvas id="` + chart_id + `"></canvas>
+                      <canvas id="` + chart_emotion_id + `"></canvas>
+                  </div>
+                  <div>
+                      <canvas id="` + chart_gender_id + `"></canvas>
                   </div>
                 </div>
               </div>
@@ -145,7 +151,6 @@ function generateEmotionChart(result, face_id) {
     var canvas_profile = document.getElementById(face_id + '_profile_chart');
     var ctx_profile = canvas_profile.getContext("2d");
     ctx_profile.drawImage(canvas_color, 0, 0);
-    console.log(html);
 
     var options = {
         "responsive": true,
@@ -160,7 +165,7 @@ function generateEmotionChart(result, face_id) {
            ]
         }
      };
-    chart_emotion = new Chart(document.getElementById(chart_id), {
+    var chart_emotion = new Chart(document.getElementById(chart_emotion_id), {
         type: 'horizontalBar',
         data: {
           "labels":[
@@ -174,8 +179,8 @@ function generateEmotionChart(result, face_id) {
           ],
           "datasets":[
              {
-                "label":"Emotion",
-                "data": result,
+                "label":"Emotion: " + result_emotion.label,
+                "data": result_emotion.result   ,
                 "fill": false,
                 "backgroundColor":[
                    "rgba(255, 99, 132, 0.2)",
@@ -202,7 +207,31 @@ function generateEmotionChart(result, face_id) {
         options: options
     });
 
-    //chart_gender.data.datasets[0].data = result;
-    //chart_gender.update();
+    var chart_emotion = new Chart(document.getElementById(chart_gender_id), {
+        type: 'horizontalBar',
+        data: {
+          "labels":[
+             "Woman",
+             "Man",
+          ],
+          "datasets":[
+             {
+                "label":"Gender: " + result_gender.label,
+                "data": result_gender.result   ,
+                "fill": false,
+                "backgroundColor":[
+                   "rgba(255, 99, 132, 0.2)",
+                   "rgba(75, 192, 192, 0.2)",
+                ],
+                "borderColor":[
+                   "rgb(255, 99, 132)",
+                   "rgb(75, 192, 192)",
+                ],
+                "borderWidth":1
+             }
+          ]
+       },
+        options: options
+    });
 
 }
