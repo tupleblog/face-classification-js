@@ -35,6 +35,7 @@ function renderImage(file) {
     var reader = new FileReader();
 
     reader.onload = function(event) {
+        $('#card-item-container').show();
         the_url = event.target.result;
         //var html = "<img id='input_img' src='" + the_url + "' style='max-width: 400px'  />";
         $('#show-img').attr("src", the_url);

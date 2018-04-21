@@ -2,13 +2,21 @@ html {
     font-family: 'CMUSansSerif', serif;
 }
 
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
 #image-container {
   position: relative;
   padding: 10px;
 }
+
 #show-img {
   max-width: 100%;
 }
+
 .face-frame {
   border: 2px solid #ff0000;
   position: absolute;
@@ -17,6 +25,7 @@ html {
 .canvas-face {
   display: none;
 }
+
 .chart-result-profile canvas {
   border-radius: 50px;
 }
@@ -27,6 +36,14 @@ html {
 
 #logo-container {
   font-family: CMUSansSerifMedium;
+}
+
+#card-item-container {
+  display: none;
+}
+
+main {
+  flex: 1 0 auto;
 }
 
 @media only screen and (max-width: 992px) {
