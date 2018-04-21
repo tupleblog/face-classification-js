@@ -20,3 +20,15 @@ html {
 .chart-result-profile canvas {
   border-radius: 50px;
 }
+
+#head-container {
+  font-size: 2.1rem;
+}
+
+
+@media only screen and (max-width: 992px) {
+  #head-container {
+    text-align: center;
+    font-size: 1.8rem;
+  }
+}
