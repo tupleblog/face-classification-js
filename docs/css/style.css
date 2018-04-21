@@ -1,14 +1,50 @@
-html {
-    font-family: 'CMUSansSerif', serif;
+/* sticky footer */
+* {
+  margin: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'CMUSansSerifMedium', serif;
+}
+
+.wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -5em;
+}
+
+.footer, .push {
+  height: 5em;
+  color: rgba(255,255,255,0.8);
+}
+
+/* center footer */
+.flex-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-item {
+  text-align: center;
+}
+
+/* images */
+#card-item-container {
+  visibility: hidden;
 }
 
 #image-container {
   position: relative;
-  padding: 10px;
+  padding: 10px; 
 }
+
 #show-img {
   max-width: 100%;
 }
+
 .face-frame {
   border: 2px solid #ff0000;
   position: absolute;
@@ -25,10 +61,16 @@ html {
   font-size: 2.1rem;
 }
 
-
 @media only screen and (max-width: 992px) {
   #head-container {
     text-align: center;
     font-size: 1.8rem;
+  }
+}
+
+@media only screen and (max-width: 640px) {
+  #head-container {
+    text-align: center;
+    font-size: 1.5rem;
   }
 }
