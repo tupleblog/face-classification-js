@@ -1,3 +1,7 @@
+html {
+    font-family: 'CMUSansSerif', serif;
+}
+
 #image-container {
   position: relative;
   padding: 10px;
