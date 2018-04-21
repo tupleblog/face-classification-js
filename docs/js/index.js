@@ -35,6 +35,7 @@ function renderImage(file) {
     var reader = new FileReader();
 
     reader.onload = function(event) {
+        $('#card-item-container').css('visibility', 'visible');
         the_url = event.target.result;
         //var html = "<img id='input_img' src='" + the_url + "' style='max-width: 400px'  />";
         $('#show-img').attr("src", the_url);
@@ -128,9 +129,6 @@ function getResultGender(im, face_id) {
 
 
 function generateResultChart(face_id, result_emotion, result_gender) {
-    // show card-item-container
-    $('#card-item-container').css('visibility', 'visible');
-
     var chart_emotion_id = face_id + '_emotion_chart';
     var chart_gender_id = face_id + '_gender_chart';
     var html = `
