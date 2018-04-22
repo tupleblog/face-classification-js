@@ -10,6 +10,9 @@ var CHART_EMOTION;
 var CHART_GENDER;
 var EXPAND_BOX = {'x': 0, 'y': 0, 'w': 0, 'h': 0};
 var TRACKER = new tracking.ObjectTracker(['face']);
+TRACKER.setEdgesDensity(0.1);
+TRACKER.setInitialScale(4);
+TRACKER.setStepSize(1);
 
 $(document).ready(function() {
 
@@ -18,7 +21,7 @@ $(document).ready(function() {
     initChart();
 
     if (window.screen.availWidth > 900) {
-        EXPAND_BOX = {'x': -5, 'y': -5, 'w': 5, 'h': 5};
+        //EXPAND_BOX = {'x': -5, 'y': -5, 'w': 5, 'h': 5};
     }
 
 });
@@ -108,9 +111,11 @@ function getResultGender(im) {
 function updateResultChart(result_emotion, result_gender) {
     //console.log(result_emotion);
     //console.log(result_gender);
+    CHART_GENDER.data.datasets[0].label = 'Gender: ' + result_gender.label;
     CHART_GENDER.data.datasets[0].data = result_gender.result;
     CHART_GENDER.update(50);
 
+    CHART_EMOTION.data.datasets[0].label = 'Emotion: ' + result_emotion.label;
     CHART_EMOTION.data.datasets[0].data = result_emotion.result;
     CHART_EMOTION.update(50);
 }

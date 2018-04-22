@@ -1,13 +1,31 @@
 var TRACKER = new tracking.ObjectTracker(['face']);
 var COUNT_FACE = 0;
+var COUNT_TRY_DETECT_FACE = 0;
+
+//TRACKER.setEdgesDensity(0.1);
+//TRACKER.setInitialScale(1);
+//TRACKER.setStepSize(1.5);
+
 
 $("#local_file").change(function() {
+    COUNT_TRY_DETECT_FACE = 0;
     renderImage(this.files[0]);
     $('#result_emotion').html("&nbsp;");
     $('#result_gender').html("&nbsp;");
 });
 
 TRACKER.on('track', function(faces) {
+    COUNT_TRY_DETECT_FACE++;
+
+    if (faces.data.length == 0 && COUNT_TRY_DETECT_FACE == 1) {
+        //Try to detect face again
+        console.log('Try to detect face again: setEdgesDensity = 0.1')
+        TRACKER.setEdgesDensity(0.1);
+        tracking.track('#show-img', TRACKER);
+        return;
+    }
+
+    TRACKER.setEdgesDensity(0.2);
 
     if (faces.data.length == 0) {
         console.log("Face not found");
