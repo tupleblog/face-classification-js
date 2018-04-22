@@ -2,12 +2,13 @@ var TRACKER = new tracking.ObjectTracker(['face']);
 var COUNT_FACE = 0;
 var COUNT_TRY_DETECT_FACE = 0;
 
-//TRACKER.setEdgesDensity(0.1);
+//TRACKER.setEdgesDensity(0.2);
 //TRACKER.setInitialScale(1);
 //TRACKER.setStepSize(1.5);
 
 $(document).ready(function() {
     $('#input_url').change(function() {
+        COUNT_TRY_DETECT_FACE = 0;
         renderImageUrl($(this).val());
     });
 });
@@ -25,13 +26,20 @@ TRACKER.on('track', function(faces) {
 
     if (faces.data.length == 0 && COUNT_TRY_DETECT_FACE == 1) {
         //Try to detect face again
-        console.log('Try to detect face again: setEdgesDensity = 0.1')
+        console.log('Try to detect face again: params-1')
         TRACKER.setEdgesDensity(0.1);
+        tracking.track('#show-img', TRACKER);
+        return;
+    } else if (faces.data.length == 0 && COUNT_TRY_DETECT_FACE == 2) {
+        console.log('Try to detect face again: params-2');
+        TRACKER.setEdgesDensity(0.1);
+        TRACKER.setInitialScale(4);
+        TRACKER.setStepSize(1);
         tracking.track('#show-img', TRACKER);
         return;
     }
 
-    TRACKER.setEdgesDensity(0.2);
+    resetTrackerParam();
 
     if (faces.data.length == 0) {
         console.log("Face not found");
@@ -54,6 +62,12 @@ TRACKER.on('track', function(faces) {
         generateResultChart(face_id, result_emotion, result_gender);
     });
 });
+
+function resetTrackerParam() {
+    TRACKER.setEdgesDensity(0.2);
+    TRACKER.setInitialScale(1);
+    TRACKER.setStepSize(1.5);
+}
 
 function renderImageUrl(url) {
     if (url.length == 0) {
