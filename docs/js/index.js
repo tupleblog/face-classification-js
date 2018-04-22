@@ -13,6 +13,8 @@ $(document).ready(function() {
         renderImageUrl($(this).val(), false);
     });
 
+    $('#btn-share').click(onBtnShareClicked);
+
     MODEL_READY_CHECKER = setInterval(function(){
         if (IS_MODEL_EMOTION_LOADED && IS_MODEL_GENDER_LOADED) {
             clearInterval(MODEL_READY_CHECKER);
@@ -24,6 +26,12 @@ $(document).ready(function() {
                 $('#input_url').val(url).trigger('change');
             }
 
+            var share_url = u.searchParams.get("share_url");
+            if (share_url != null) {
+                var decode_url = atob(share_url);
+                $('#input_url').val(decode_url).trigger('change');
+            }
+
         }
 
     }, 1000);
@@ -33,6 +41,8 @@ $(document).ready(function() {
 
 
 $("#local_file").change(function() {
+    $('#btn-share').hide();
+    $('#input_url').val('');
     COUNT_TRY_DETECT_FACE = 0;
     renderImage(this.files[0]);
     $('#result_emotion').html("&nbsp;");
@@ -89,6 +99,7 @@ function resetTrackerParam() {
 
 function renderImageUrl(url, showError) {
     if (url.length == 0) {
+        $('#btn-share').hide();
         return;
     }
 
@@ -96,6 +107,7 @@ function renderImageUrl(url, showError) {
     var img = new Image;
     img.crossOrigin = "Anonymous";
     img.onload = function(){
+        $('#btn-share').show();
         $('#image-loading').hide();
         $('#card-item-container').css('visibility', 'visible');
     	console.log('Image Loaded');
@@ -220,6 +232,37 @@ function getResultGender(im, face_id) {
     return result;
 }
 
+function onBtnShareClicked() {
+    var input_url = $('#input_url').val();
+    //TODO: validate is url
+    if (input_url.length == 0) {
+        return;
+    }
+
+    var share_url = generateShareUrl(input_url);
+    var html = `
+    <div class="row">
+       <div class="input-field col s12">
+         <input placeholder="Placeholder" id="first_name" type="text" value="` + share_url  + `">
+       </div>
+     </div>
+    `;
+
+    swal({
+      title: 'แชร์ผลลัพธ์นี้ให้เพื่อน',
+      html: html,
+      showCloseButton: true,
+    });
+
+}
+
+function generateShareUrl(input_url) {
+
+    var share_url = 'https://tupleblog.github.io/face-classification-js/index.html?share_url=';
+    //share_url = btoa(pako.deflate(input_url, { to: 'string' }));
+    share_url += btoa(input_url);
+    return share_url;
+}
 
 function generateResultChart(face_id, result_emotion, result_gender) {
     var chart_emotion_id = face_id + '_emotion_chart';
