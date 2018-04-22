@@ -6,6 +6,12 @@ var COUNT_TRY_DETECT_FACE = 0;
 //TRACKER.setInitialScale(1);
 //TRACKER.setStepSize(1.5);
 
+$(document).ready(function() {
+    $('#input_url').change(function() {
+        renderImageUrl($(this).val());
+    });
+});
+
 
 $("#local_file").change(function() {
     COUNT_TRY_DETECT_FACE = 0;
@@ -48,6 +54,31 @@ TRACKER.on('track', function(faces) {
         generateResultChart(face_id, result_emotion, result_gender);
     });
 });
+
+function renderImageUrl(url) {
+    if (url.length == 0) {
+        return;
+    }
+
+    var img = new Image;
+    img.crossOrigin = "Anonymous";
+    img.onload = function(){
+        $('#card-item-container').css('visibility', 'visible');
+    	console.log('Image Loaded');
+    	document.getElementById("show-img").src = this.src
+        clearFaceFrame();
+        findFaces();
+    };
+    img.onerror = function() {
+        swal(
+          'แย่จัง',
+          'ไม่สามารถโหลดภาพนี้ได้',
+          'error'
+        );
+    };
+
+    img.src = url;
+}
 
 function renderImage(file) {
     var reader = new FileReader();
