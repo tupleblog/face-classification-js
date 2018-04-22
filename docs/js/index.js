@@ -1,6 +1,7 @@
 var TRACKER = new tracking.ObjectTracker(['face']);
 var COUNT_FACE = 0;
 var COUNT_TRY_DETECT_FACE = 0;
+var MODEL_READY_CHECKER;
 
 //TRACKER.setEdgesDensity(0.2);
 //TRACKER.setInitialScale(1);
@@ -9,8 +10,25 @@ var COUNT_TRY_DETECT_FACE = 0;
 $(document).ready(function() {
     $('#input_url').change(function() {
         COUNT_TRY_DETECT_FACE = 0;
-        renderImageUrl($(this).val());
+        renderImageUrl($(this).val(), false);
     });
+
+    MODEL_READY_CHECKER = setInterval(function(){
+        if (IS_MODEL_EMOTION_LOADED && IS_MODEL_GENDER_LOADED) {
+            clearInterval(MODEL_READY_CHECKER);
+            console.log("Model Ready");
+            // Auto fill url
+            var u = new URL(window.location.href);
+            var url = u.searchParams.get("url");
+            if (url != null) {
+                $('#input_url').val(url).trigger('change');
+            }
+
+        }
+
+    }, 1000);
+
+
 });
 
 
@@ -69,14 +87,16 @@ function resetTrackerParam() {
     TRACKER.setStepSize(1.5);
 }
 
-function renderImageUrl(url) {
+function renderImageUrl(url, showError) {
     if (url.length == 0) {
         return;
     }
 
+    $('#image-loading').show();
     var img = new Image;
     img.crossOrigin = "Anonymous";
     img.onload = function(){
+        $('#image-loading').hide();
         $('#card-item-container').css('visibility', 'visible');
     	console.log('Image Loaded');
     	document.getElementById("show-img").src = this.src
@@ -84,6 +104,11 @@ function renderImageUrl(url) {
         findFaces();
     };
     img.onerror = function() {
+        $('#image-loading').hide();
+        if (showError == false) {
+            renderImageUrlProxy(url);
+            return;
+        }
         swal(
           'แย่จัง',
           'ไม่สามารถโหลดภาพนี้ได้',
@@ -92,6 +117,11 @@ function renderImageUrl(url) {
     };
 
     img.src = url;
+}
+
+function renderImageUrlProxy(url) {
+    var proxy_url = 'https://cors-anywhere.herokuapp.com/' + url;
+    renderImageUrl(proxy_url, true);
 }
 
 function renderImage(file) {
