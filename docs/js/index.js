@@ -114,6 +114,7 @@ function renderImageUrl(url, showError) {
         $('#btn-share').show();
         $('#image-loading').hide();
         $('#card-item-container').css('visibility', 'visible');
+        $('#btn-manual').show();
         console.log('Image Loaded');
         document.getElementById("show-img").src = this.src;
         clearFaceFrame();
@@ -146,6 +147,7 @@ function renderImage(file) {
     reader.onload = function(event) {
         disableManualCrop();
         $('#card-item-container').css('visibility', 'visible');
+        $('#btn-manual').show();
         the_url = event.target.result;
         //var html = "<img id='input_img' src='" + the_url + "' style='max-width: 400px'  />";
         $('#show-img').attr("src", the_url);

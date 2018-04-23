@@ -80,6 +80,9 @@ html, body {
 #btn-share {
   display: none;
 }
+#btn-manual {
+  display: none;
+}
 
 @media only screen and (max-width: 992px) {
   #head-container {
