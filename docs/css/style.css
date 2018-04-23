@@ -83,6 +83,9 @@ html, body {
 #btn-manual {
   display: none;
 }
+.cropper-modal {
+  opacity: 0.05;
+}
 
 @media only screen and (max-width: 992px) {
   #head-container {
