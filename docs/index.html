@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-+d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg"
     crossorigin="anonymous">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
 </head>
 
@@ -81,12 +82,18 @@
         </div>
       </div>
 
+      <div class="row">
+        <div class="col s12 m3"><button id="btn-manual" class="waves-effect waves-light btn light-blue darken-2">กำหนดหน้าเอง</button></div>
+      </div>
+
       <!-- image viewer -->
       <div class="row" id="card-item-container">
         <div class="col s12 m6">
           <div class="card">
             <div id="image-container" class="card-content">
-              <img id="show-img" src="" crossOrigin="Anonymous" />
+              <div>
+                <img id="show-img" src="" crossOrigin="Anonymous" />
+              </div>
             </div>
           </div>
         </div>
@@ -122,6 +129,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tracking.js/1.1.3/data/face-min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.19.0/sweetalert2.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.0.0/cropper.min.js"></script>
+
   <script src="js/util.js"></script>
   <script src="js/model_emotion.js"></script>
   <script src="js/model_gender.js"></script>

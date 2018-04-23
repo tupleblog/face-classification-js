@@ -2,6 +2,8 @@ var TRACKER = new tracking.ObjectTracker(['face']);
 var COUNT_FACE = 0;
 var COUNT_TRY_DETECT_FACE = 0;
 var MODEL_READY_CHECKER;
+var CROPPER;
+var CROPPER_IMG;
 
 //TRACKER.setEdgesDensity(0.2);
 //TRACKER.setInitialScale(1);
@@ -14,6 +16,7 @@ $(document).ready(function() {
     });
 
     $('#btn-share').click(onBtnShareClicked);
+    $('#btn-manual').click(enableManualCrop);
 
     MODEL_READY_CHECKER = setInterval(function(){
         if (IS_MODEL_EMOTION_LOADED && IS_MODEL_GENDER_LOADED) {
@@ -103,6 +106,7 @@ function renderImageUrl(url, showError) {
         return;
     }
 
+    disableManualCrop();
     $('#image-loading').show();
     var img = new Image;
     img.crossOrigin = "Anonymous";
@@ -110,8 +114,8 @@ function renderImageUrl(url, showError) {
         $('#btn-share').show();
         $('#image-loading').hide();
         $('#card-item-container').css('visibility', 'visible');
-    	console.log('Image Loaded');
-    	document.getElementById("show-img").src = this.src
+        console.log('Image Loaded');
+        document.getElementById("show-img").src = this.src;
         clearFaceFrame();
         findFaces();
     };
@@ -140,6 +144,7 @@ function renderImage(file) {
     var reader = new FileReader();
 
     reader.onload = function(event) {
+        disableManualCrop();
         $('#card-item-container').css('visibility', 'visible');
         the_url = event.target.result;
         //var html = "<img id='input_img' src='" + the_url + "' style='max-width: 400px'  />";
@@ -161,6 +166,7 @@ function findFaces() {
 function clearFaceFrame() {
     $('#image-container .face-frame').remove();
     $('.chart-result').remove();
+    $('.canvas-face').remove();
 }
 
 function drawFaceFrame(rect) {
@@ -262,6 +268,38 @@ function generateShareUrl(input_url) {
     //share_url = btoa(pako.deflate(input_url, { to: 'string' }));
     share_url += btoa(input_url);
     return share_url;
+}
+
+function disableManualCrop() {
+  $('#show-img').cropper('destroy');
+}
+
+function enableManualCrop() {
+  clearFaceFrame();
+  CROPPER_IMG = $('#show-img');
+  CROPPER_IMG.cropper({
+    aspectRatio: 1,
+    zoomable: false,
+    minCropBoxWidth: 32,
+    minCropBoxHeight: 32,
+    ready: function () {
+      console.log('build');
+      CROPPER_IMG.cropper("setCropBoxData", { width: 124, height: 124 });
+    },
+    cropend: function(event) {
+      console.log('cropend');
+      clearFaceFrame();
+      var rect = CROPPER.getData();
+      var face_id = 'face_1';
+      cropFace(rect, face_id);
+
+      var result_emotion = getResultEmotion(document.getElementById(face_id), face_id);
+      var result_gender = getResultGender(document.getElementById(face_id), face_id);
+      generateResultChart(face_id, result_emotion, result_gender);
+    }
+  });
+  CROPPER = CROPPER_IMG.data('cropper');
+
 }
 
 function generateResultChart(face_id, result_emotion, result_gender) {
