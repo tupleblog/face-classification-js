@@ -86,6 +86,9 @@ html, body {
 .cropper-modal {
   opacity: 0.05;
 }
+#main-container {
+  font-family: Roboto, sans-serif;
+}
 
 @media only screen and (max-width: 992px) {
   #head-container {

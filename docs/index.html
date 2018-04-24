@@ -33,16 +33,16 @@
     </nav>
 
     <!-- main container -->
-    <div class="container">
+    <div id="main-container" class="container">
       <br />
       <!-- uploader -->
       <div class="row">
         <div class="col s0 m3"></div>
         <div class="col s12 m6">
-          <p>อัพโหลดรูปเพื่อใช้ทำนายอารมณ์และเพศ</p>
+          <p>Select your photo</p>
           <div class="file-field input-field">
             <div class="btn  light-blue darken-2">
-              <span>เลือกรูป</span>
+              <span>Select photo</span>
               <input type="file" id="local_file">
               <i class="material-icons right">add_a_photo</i>
             </div>
@@ -60,7 +60,7 @@
         <div class="col s12 m6">
           <div class="input-field">
             <input id="input_url" type="text" placeholder=" ">
-            <label for="input_url">ใส่ URL รูปภาพเพื่อใช้ทำนายอารมณ์และเพศ</label>
+            <label for="input_url">or pasting image URL</label>
           </div>
         </div>
         <div class="col s12 m1"><button id="btn-share" class="waves-effect waves-light btn light-blue darken-2">Share</button></div>
@@ -83,7 +83,7 @@
       </div>
 
       <div class="row">
-        <div class="col s12 m3"><button id="btn-manual" class="waves-effect waves-light btn light-blue darken-2">กำหนดหน้าเอง</button></div>
+        <div class="col s12 m3"><button id="btn-manual" class="waves-effect waves-light btn light-blue darken-2">Manual crop</button></div>
       </div>
 
       <!-- image viewer -->

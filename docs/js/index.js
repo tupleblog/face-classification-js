@@ -75,8 +75,8 @@ TRACKER.on('track', function(faces) {
     if (faces.data.length == 0) {
         console.log("Face not found");
         swal(
-          'แย่จัง',
-          'ไม่พบใบหน้า T_T',
+          'Sorry',
+          'We couldn\'t identify the face T_T<br /> Try manually crop the face.',
           'error'
         );
         return;
