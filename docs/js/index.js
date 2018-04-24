@@ -257,7 +257,7 @@ function onBtnShareClicked() {
     `;
 
     swal({
-      title: 'แชร์ผลลัพธ์นี้ให้เพื่อน',
+      title: 'Share this result',
       html: html,
       showCloseButton: true,
     });
