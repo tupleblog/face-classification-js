@@ -411,4 +411,7 @@ function generateResultChart(face_id, result_emotion, result_gender) {
         options: options
     });
 
+    if (typeof generateResultChartTrigger == 'function') {
+        generateResultChartTrigger(face_id);
+    }
 }
