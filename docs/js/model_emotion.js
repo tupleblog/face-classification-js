@@ -7,7 +7,7 @@ initEmotion = async () => {
   //Warm up network
   MODEL_EMOTION.predict(tf.zeros([1, 64, 64, 1]));
   IS_MODEL_EMOTION_LOADED = true;
-   M.toast({html: 'Model Emotion Loaded.'})
+   M.toast({html: 'Model Emotion Loaded.', displayLength: 1000})
 };
 
 initEmotion();

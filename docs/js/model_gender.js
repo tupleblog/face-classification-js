@@ -7,7 +7,7 @@ initGender = async () => {
   //Warm up network
   MODEL_GENDER.predict(tf.zeros([1, 64, 64, 1]));
   IS_MODEL_GENDER_LOADED = true
-  M.toast({html: 'Model Gender Loaded.'})
+  M.toast({html: 'Model Gender Loaded.', displayLength: 1000})
 };
 
 initGender();
